@@ -1,0 +1,1 @@
+from allen_vit_pipeline import pipeline
