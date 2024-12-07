@@ -200,3 +200,25 @@ class STAProcessEID:
         print(f"STA saved to {save_path}")
         
         return sta_final
+    
+class Gather:
+    def __init__(self, config):
+        self.config = config
+
+    def gather(self):
+        processed_files = os.listdir(self.config.save_path)
+        arrays = []
+        
+        for fname in processed_files:
+            if fname.endswith('.npy'):
+                file_path = os.path.join(self.config.save_path, fname)
+                arr = np.load(file_path)
+                arrays.append(arr)
+
+        # Stack all arrays vertically into a single large array
+        if arrays:
+            mega_array = np.vstack(arrays)
+            return mega_array
+        else:
+            return np.array([])  # Return an empty array if no npy files found
+
