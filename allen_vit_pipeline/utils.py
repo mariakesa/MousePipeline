@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def make_container_dict(boc):
     '''
@@ -19,3 +20,14 @@ def make_container_dict(boc):
             eid_dict[container_id] = {}
         eid_dict[container_id][session_type] = ids[0]
     return eid_dict
+
+def get_existing_containers():
+    path='/home/maria/Documents/AllenBrainObservatory/ophys_experiment_events'
+    # List all files in the directory
+    filenames = os.listdir(path)
+    containers=[]
+    for f in filenames:
+        parsed=f.split('_')
+        container_id=int(parsed[0])
+        containers.append(container_id)
+    return containers
