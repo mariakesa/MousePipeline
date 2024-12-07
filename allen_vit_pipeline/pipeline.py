@@ -77,6 +77,23 @@ class EIDRepository:
         print(processed_eids)
         eids_to_process=[eid for eid in downloaded_eids if eid not in processed_eids]
         return eids_to_process
+    
+class PermutationRepository(EIDRepository):
+    def __init__(self, config):
+        self.config = config
+    
+    def get_already_processed_eids(self):
+        path=self.config.save_path
+        filenames = os.listdir(path)
+        processed_eids=[]
+        for f in filenames:
+            parsed=f.split('_')
+            print(parsed)
+            if parsed[1]=='STA_permutation.npy':
+                eid=int(parsed[0])
+                processed_eids.append(eid)
+        return processed_eids
+    
 
 class STAProcessEID:
     def __init__(self, config):
@@ -221,4 +238,11 @@ class Gather:
             return mega_array
         else:
             return np.array([])  # Return an empty array if no npy files found
+        
+class PermutationSTA:
+    def __init__(self, config, permutation_n):
+        self.config = config
+        self.permutation_n = permutation_n
+        self.random_seeds=np.arange(1337,10,(1337+10000))
+        print(self.random_seeds)
 
