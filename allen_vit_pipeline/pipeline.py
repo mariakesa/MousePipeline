@@ -6,6 +6,7 @@ from allensdk.core.brain_observatory_cache import BrainObservatoryCache
 import os
 import pickle
 import pandas as pd
+from sklearn.decomposition import PCA
 
 load_dotenv()
 
@@ -89,7 +90,7 @@ class PermutationRepository(EIDRepository):
         for f in filenames:
             parsed=f.split('_')
             print(parsed)
-            if parsed[1]=='STA_permutation.npy':
+            if parsed[1]=='STA-permutation.npy':
                 eid=int(parsed[0])
                 processed_eids.append(eid)
         return processed_eids
@@ -218,6 +219,7 @@ class STAProcessEID:
         
         return sta_final
     
+    
 class Gather:
     def __init__(self, config):
         self.config = config
@@ -227,7 +229,7 @@ class Gather:
         arrays = []
         
         for fname in processed_files:
-            if fname.endswith('.npy'):
+            if fname.endswith('STA.npy'):
                 file_path = os.path.join(self.config.save_path, fname)
                 arr = np.load(file_path)
                 arrays.append(arr)
@@ -239,10 +241,115 @@ class Gather:
         else:
             return np.array([])  # Return an empty array if no npy files found
         
-class PermutationSTA:
+
+class PermutationGather(Gather):
+    def __init__(self, config):
+        self.config = config
+
+    def gather(self):
+        processed_files = os.listdir(self.config.save_path)
+        arrays = []
+        
+        for fname in processed_files:
+            if fname.endswith('STA-permutation.npy'):
+                file_path = os.path.join(self.config.save_path, fname)
+                arr = np.load(file_path)
+                arrays.append(arr)
+
+        # Stack all arrays vertically into a single large array
+        if arrays:
+            mega_array = np.vstack(arrays)
+            return mega_array
+        else:
+            return np.array([])  # Return an empty array if no npy files found
+        
+
+class PermutationSTA(STAProcessEID):
     def __init__(self, config, permutation_n):
         self.config = config
+        transformer_embedding_path = Path(self.config.transformer_embedding_path) / f"{self.config.transformer_name}.pkl"
+        # Load the transformer embeddings
+        with open(transformer_embedding_path, 'rb') as file:
+            transfr = pickle.load(file)
+        self.embedding = transfr[self.config.stimulus]  # Shape: (total_time_points, embedding_dim)
+        self.embedding_dim = self.embedding.shape[1]
         self.permutation_n = permutation_n
-        self.random_seeds=np.arange(1337,10,(1337+10000))
-        print(self.random_seeds)
+        self.random_seeds=np.arange(1337,(1337+10000),10)
+        print(self.random_seeds.shape)
+        self.random_seed=self.random_seeds[self.permutation_n]
+        self.gatherer=PermutationGather(config)
+        
 
+    def sta(self, eid):
+    # Access the Brain Observatory Cache
+        boc = self.config.boc
+        
+        # Retrieve event data and regression data for the experiment
+        data_set_events = boc.get_ophys_experiment_events(eid)  # Shape: (n_neurons, total_time_points)
+        data_set_regression = boc.get_ophys_experiment_data(eid)
+        stim_table = data_set_regression.get_stimulus_table(self.config.stimulus)
+        
+        # Determine the number of neurons and trials
+        n_neurons = data_set_events.shape[0]
+        n_trials = stim_table['repeat'].nunique()
+        
+        # Initialize accumulators for STA computation
+        sta_sum = np.zeros((n_neurons, self.embedding_dim))
+        count_sum = np.zeros(n_neurons, dtype=int)
+
+        np.random.seed(self.random_seed)
+        self.embedding=np.random.permutation(self.embedding)
+        
+        # Iterate over each trial to accumulate STA sums and counts
+        for trial in stim_table['repeat'].unique():
+            # Extract absolute time points for this trial
+            ts = stim_table.loc[stim_table['repeat'] == trial, 'start'].values  # Shape: (trial_time_points,)
+            
+            # Subset events and embeddings for this trial
+            trial_events = data_set_events[:, ts].nonzero()  # Tuple: (neuron_indices, time_indices)
+            embedding_trial = self.embedding        # Shape: (trial_time_points, embedding_dim)
+            
+            # Compute STA increments for this trial
+            sta_increment, count_increment = self.compute_sta(trial_events, n_neurons, embedding_trial)
+            #print(sta_increment.shape, count_increment)
+            
+            # Accumulate the sums and counts
+            sta_sum += sta_increment
+            count_sum += count_increment
+        
+        # Compute the final STA by averaging the sums
+        sta_final = np.zeros((n_neurons, self.embedding_dim))
+        valid_neurons = count_sum > 0
+        sta_final[valid_neurons] = sta_sum[valid_neurons] / count_sum[valid_neurons, None]
+
+        #print(sta_final.shape)
+        #print(sta_final)
+        
+        # Save the STA to disk
+        save_path = Path(self.config.save_path) / f"{eid}_STA-permutation.npy"
+        np.save(save_path, sta_final)
+        print(f"STA saved to {save_path}")
+        
+        return sta_final
+    
+    def __call__(self, eids):
+        print(eids)
+        for eid in eids:
+            self.sta(eid)
+        mega_array=self.gatherer.gather()
+        pca = PCA()
+        pca.fit(mega_array)
+
+        # Get the eigenvalues (explained variance) and the explained variance ratios
+        eigenvalues = pca.explained_variance_
+        explained_variance_ratio = pca.explained_variance_ratio_
+
+        data={'eigenvalues':eigenvalues, 'explained_variance_ratio':explained_variance_ratio}
+
+        pca_results_path = Path(self.config.save_path) / f'pca_results-permutation_{self.permutation_n}.pkl'
+        with open(pca_results_path, 'wb') as f:
+            pickle.dump(data, f)
+        print(f"PCA results saved to {pca_results_path}")
+
+            
+        
