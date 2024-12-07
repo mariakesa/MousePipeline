@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import Path
 
 def make_container_dict(boc):
     '''
@@ -21,8 +22,8 @@ def make_container_dict(boc):
         eid_dict[container_id][session_type] = ids[0]
     return eid_dict
 
-def get_existing_containers():
-    path='/home/maria/Documents/AllenBrainObservatory/ophys_experiment_events'
+def get_existing_containers(config):
+    path=str(Path(config.allen_cache_path) / Path('ophys_experiment_events'))
     # List all files in the directory
     filenames = os.listdir(path)
     containers=[]
