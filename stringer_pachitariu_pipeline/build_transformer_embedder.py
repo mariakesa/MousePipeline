@@ -11,6 +11,7 @@ print(mat['imgs'].shape)
 #plt.show()
 from transformers import ViTImageProcessor, ViTModel
 model='google/vit-base-patch16-224-in21k'
+model='google/vit-base-patch16-224'
 processor = ViTImageProcessor.from_pretrained(model)
 model = ViTModel.from_pretrained(model)
 
@@ -45,4 +46,4 @@ def process_stims(stims):
 stims=np.array([mat['imgs'][:,90:180,i] for i in range(2800)])
 embeddings=process_stims(stims)
 print(embeddings.shape)
-np.save('/home/maria/Documents/CarsenMariusData/6845348/embeddings.npy',embeddings)
+np.save('embeddings.npy',embeddings)

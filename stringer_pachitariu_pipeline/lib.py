@@ -1,6 +1,6 @@
 import numpy as np
 
-embeddings=np.load('/home/maria/Documents/CarsenMariusData/6845348/embeddings.npy')
+embeddings=np.load('embeddings.npy')
 path="/home/maria/Documents/CarsenMariusData/6845348/natimg2800_M161025_MP030_2017-05-29.mat"
 import scipy.io
 import matplotlib.pyplot as plt

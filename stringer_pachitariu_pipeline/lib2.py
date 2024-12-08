@@ -1,6 +1,6 @@
 import numpy as np
 
-embeddings=np.load('/home/maria/Documents/CarsenMariusData/6845348/embeddings.npy')
+embeddings=np.load('embeddings.npy')
 path="/home/maria/Documents/CarsenMariusData/6845348/natimg2800_M161025_MP030_2017-05-29.mat"
 import scipy.io
 import matplotlib.pyplot as plt
@@ -62,7 +62,7 @@ def actual(embeddings, events, sequences):
     return np.array(stas)
 
 start=time.time()
-distr=actual(embeddings, images_nonempty, sequences)
+#distr=actual(embeddings, images_nonempty, sequences)
 
 dct_lst=[]
 for i in range(100):
@@ -71,8 +71,17 @@ for i in range(100):
     dct_lst.append(dct)
 end=time.time()
 print(end-start)
+import os
+import pickle
+#json.dump(dct_lst, open("/home/maria/Documents/CarsenMariusData/6845348/permutation_results/null_distr.json", 'w'))
+file_path = "/home/maria/Documents/CarsenMariusData/permutation_result/null_distr.pkl"
 
-json.dump(dct_lst, open("/home/maria/Documents/CarsenMariusData/6845348/permutation_results/null_distr.json", 'w'))
+# Ensure the directory exists
+os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+# Save the data to a pickle file
+with open(file_path, 'wb') as file:
+    pickle.dump(dct_lst, file)
 
 '''
 # Apply PCA
