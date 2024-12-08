@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
+
 config = Config('three_session_A', 'natural_movie_one')
 
 eids = EIDRepository(config).get_eids_to_process()

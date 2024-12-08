@@ -16,5 +16,5 @@ experiment_containers = make_container_dict(boc)
 
 for c in experiment_containers.keys():
     session_A=experiment_containers[c]['three_session_A']
-    data_set_regression = boc.get_ophys_experiment_data(session_A)
+    #data_set_regression = boc.get_ophys_experiment_data(session_A)
     data_set_events= boc.get_ophys_experiment_events(session_A)

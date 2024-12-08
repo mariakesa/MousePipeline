@@ -2,6 +2,7 @@ path="/home/maria/Documents/CarsenMariusData/6845348/natimg2800_M161025_MP030_20
 
 import scipy.io
 import matplotlib.pyplot as plt
+import numpy as np
 
 mat = scipy.io.loadmat(path)
 print(mat.keys())
@@ -10,3 +11,5 @@ print(mat.keys())
 print(mat['db'])
 print(mat['stim'][0].shape)
 print(mat['stim'][0][0][0].shape)
+
+embeddings=np.load('/home/maria/Documents/CarsenMariusData/6845348/embeddings.npy')

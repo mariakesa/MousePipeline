@@ -7,4 +7,5 @@ config = Config('three_session_A', 'natural_movie_one')
 
 eids = PermutationRepository(config).get_eids_to_process()
 print('boom eids:', eids)
-processor=PermutationRepository(config)
+
+permuter=PermutationSTA(config, 0)(eids)
