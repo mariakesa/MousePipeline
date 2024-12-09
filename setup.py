@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 setup(
     name='vit_pipeline',
     version='0.1.0',
-    packages=find_packages(),
+    packages=find_packages(include=['vit_pipeline', 'vit_pipeline.*']),
     author='Maria Kesa',
     author_email='mariarosekesa@gmail.com',
-    description='A brief description of the allen_vit_pipeline package.',
+    description='STA computation code for VIT embeddings',
     url='https://github.com/MousePipeline',  # Replace with your repository URL
     classifiers=[
         'Programming Language :: Python :: 3',
