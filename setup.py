@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='allen_vit_pipeline',
+    name='vit_pipeline',
     version='0.1.0',
     packages=find_packages(),
     author='Maria Kesa',
