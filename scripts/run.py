@@ -1,4 +1,4 @@
-from allen_vit_pipeline.pipeline import Config, EIDRepository, STAProcessEID, Gather
+from vit_pipeline.allen_pipeline import Config, EIDRepository, STAProcessEID, Gather
 import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
@@ -27,9 +27,16 @@ print(mega_array.shape)
 end=time.time()
 print(end-start)
 
+#plt.imshow(np.corrcoef(mega_array[:1000]))
+#plt.show()
+print(np.corrcoef(mega_array[:1000]).shape)
+
+
 # Apply PCA
 pca = PCA()
-pca.fit(mega_array)
+pca.fit(mega_array.T)
+
+print(pca.explained_variance_ratio_.shape)
 
 # Get the eigenvalues (explained variance) and the explained variance ratios
 eigenvalues = pca.explained_variance_

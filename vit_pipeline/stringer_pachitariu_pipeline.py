@@ -124,6 +124,8 @@ class DataSTA:
         for neuron in range(num_neurons):
             # Find indices where events occurred (non-zero)
             event_times = np.nonzero(self.events[neuron, :])[0]
+            #print('booyaka',event_times)
+            #print(self.sequences[event_times])
             
             if event_times.size > 0:
                 # Retrieve corresponding image indices from sequences
@@ -159,9 +161,9 @@ class DataSTA:
         #plt.imshow(np.cov(sta))
         #plt.show()
 
-        plt.plot(sta[:,0])
-        plt.plot(sta[:,1])
-        plt.show()
+        #plt.plot(sta[:,0])
+        #plt.plot(sta[:,1])
+        #plt.show()
         
         # Perform PCA
         pca = PCA()
@@ -173,43 +175,6 @@ class DataSTA:
         cumulative_variance = np.cumsum(explained_variance_ratio)
         
         return sta, pca, eigenvalues, explained_variance_ratio, cumulative_variance
-    
-
-import numpy as np
-import scipy.io
-from sklearn.decomposition import PCA
-
-def process_sparsity(events, config):
-    """
-    Applies quantile-based sparsification to the event data.
-
-    For each neuron (row), values above the specified quantile are retained,
-    and values below are set to zero.
-
-    Parameters:
-    - events (np.ndarray): 2D array of event data with shape (num_neurons, num_timepoints).
-    - config (object): Configuration object containing sparsity parameters.
-        - config.quantile_sparsity (bool): Flag to apply sparsification.
-        - config.quantile_value (float): Quantile value between 0 and 1 (e.g., 0.95 for 95th percentile).
-
-    Returns:
-    - np.ndarray: Sparsified event data with the same shape as input.
-    """
-    if not config.quantile_sparsity:
-        return events
-
-    # Validate quantile_value
-    quantile = config.quantile_value
-    if not (0 < quantile < 1):
-        raise ValueError("quantile_value must be between 0 and 1.")
-
-    # Compute quantiles for each neuron (row-wise)
-    neuron_quantiles = np.quantile(events, quantile, axis=1, keepdims=True)
-
-    # Apply threshold: retain values above the quantile, set others to zero
-    sparsified_events = np.where(events >= neuron_quantiles, events, 0)
-
-    return sparsified_events
 
 class DataSTAWeighted:
     def __init__(self, config):
@@ -317,7 +282,9 @@ class DataSTAWeighted:
         return sta,pca, eigenvalues, explained_variance_ratio, cumulative_variance
 
     
-#config=Config('natimg2800_M161025_MP030_2017-05-29', quantile_sparsity=0)
-#pcs=DataSTA(config).run()
-#print(pcs)
+config=Config('natimg2800_M161025_MP030_2017-05-29', quantile_sparsity=0)
+pcs=DataSTA(config).run()
+plt.imshow(np.corrcoef(pcs[0].T))
+plt.show()
+print(pcs)
 

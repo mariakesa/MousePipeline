@@ -1,4 +1,4 @@
-from allen_vit_pipeline.utils import make_container_dict
+from vit_pipeline.utils import make_container_dict
 from dotenv import load_dotenv
 import numpy as np
 import matplotlib.pyplot as plt
