@@ -1,6 +1,6 @@
 from vit_pipeline.allen_pipeline import Config, EIDRepository, STAProcessEID, Gather
 import numpy as np
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA,SparsePCA
 import matplotlib.pyplot as plt
 
 
@@ -29,13 +29,19 @@ print(end-start)
 
 #plt.imshow(np.corrcoef(mega_array[:1000]))
 #plt.show()
-print(np.corrcoef(mega_array[:1000]).shape)
+#print(np.corrcoef(mega_array[:1000]).shape)
 
 
 # Apply PCA
 pca = PCA()
-pca.fit(mega_array.T)
+pca.fit(mega_array)
 
+print('boom',pca.components_[0].shape)
+import matplotlib.pyplot as plt
+
+plt.plot(pca.components_[0])
+
+plt.show()
 print(pca.explained_variance_ratio_.shape)
 
 # Get the eigenvalues (explained variance) and the explained variance ratios

@@ -156,19 +156,11 @@ class DataSTA:
         # Compute STAs
         sta = self.compute_sta()
 
-
-
-        #plt.imshow(np.cov(sta))
-        #plt.show()
-
-        #plt.plot(sta[:,0])
-        #plt.plot(sta[:,1])
-        #plt.show()
-        
         # Perform PCA
-        pca = PCA()
+        pca = PCA(n_components=10)
         pca.fit(sta)
         
+        print('MEGABOOM',pca.components_[0].shape)
         # Extract PCA results
         eigenvalues = pca.explained_variance_
         explained_variance_ratio = pca.explained_variance_ratio_
@@ -282,9 +274,9 @@ class DataSTAWeighted:
         return sta,pca, eigenvalues, explained_variance_ratio, cumulative_variance
 
     
-config=Config('natimg2800_M161025_MP030_2017-05-29', quantile_sparsity=0)
+config=Config('natimg2800_M161025_MP030_2017-05-29', quantile_sparsity=0.95)
 pcs=DataSTA(config).run()
-plt.imshow(np.corrcoef(pcs[0].T))
-plt.show()
+#plt.imshow(np.corrcoef(pcs[0].T))
+#plt.show()
 print(pcs)
 

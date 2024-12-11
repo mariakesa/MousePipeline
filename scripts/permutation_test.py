@@ -1,4 +1,4 @@
-from allen_vit_pipeline.pipeline import Config, EIDRepository, PermutationRepository, Gather, PermutationSTA
+from vit_pipeline.allen_pipeline import Config, EIDRepository, PermutationRepository, Gather, PermutationSTA
 import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
