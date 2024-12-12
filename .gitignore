@@ -163,3 +163,4 @@ cython_debug/
 
 *.egg-info
 *.npy
+*.h5

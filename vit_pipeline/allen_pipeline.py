@@ -338,7 +338,7 @@ class PermutationSTA(STAProcessEID):
             self.sta(eid)
         mega_array=self.gatherer.gather()
         pca = PCA()
-        pca.fit(mega_array.T)
+        pca.fit(mega_array)
 
         # Get the eigenvalues (explained variance) and the explained variance ratios
         eigenvalues = pca.explained_variance_
