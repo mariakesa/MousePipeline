@@ -22,16 +22,30 @@ embedding = tsne.fit_transform(dat)  # shape (1250, 2)
 
 # Convert image paths by removing 'OOD_monkey_data/Images/' prefix
 base_image_dir = '/home/maria/Documents/HarvardData/Images'
+possible_extensions = ['.jpg', '.JPG', '.png', '.PNG']
+
 image_paths = []
 for p in session_ims:
     # Extract the filename after 'OOD_monkey_data/Images/'
     filename = p.split('OOD_monkey_data/Images/')[-1]
-    # Split the extension off and re-append '.jpg' in lowercase
-    base_name, ext = os.path.splitext(filename)
-    filename = base_name + '.jpg'  # force lowercase .jpg extension
-    full_path = os.path.join(base_image_dir, filename)
-    image_paths.append(full_path)
 
+    base_name, ext = os.path.splitext(filename)
+    # Try each possible extension until we find a file that exists
+    found_path = None
+    for ext_candidate in possible_extensions:
+        candidate_path = os.path.join(base_image_dir, base_name + ext_candidate)
+        if os.path.exists(candidate_path):
+            found_path = candidate_path
+            break
+
+    if found_path is None:
+        # If no file matches any extension, warn and skip or provide a fallback
+        print(f"Warning: No matching file found for base name: {base_name}")
+        # You could choose to append a placeholder image path or skip
+        # For now, we skip appending
+        # image_paths.append('/path/to/placeholder.jpg') # or something similar
+    else:
+        image_paths.append(found_path)
 # Create Plotly figure for TSNE embedding
 fig = px.scatter(
     x=embedding[:,0],
