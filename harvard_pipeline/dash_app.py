@@ -17,7 +17,7 @@ session_ims = pickle.load(open('/home/maria/Documents/HarvardData/processed_sess
 assert dat.shape[0] == len(session_ims)
 
 # Run TSNE on the neural responses
-tsne = TSNE(n_components=2, perplexity=30, random_state=42)
+tsne = TSNE(n_components=2, perplexity=20, random_state=42)
 embedding = tsne.fit_transform(dat)  # shape (1250, 2)
 
 # Convert image paths by removing 'OOD_monkey_data/Images/' prefix
