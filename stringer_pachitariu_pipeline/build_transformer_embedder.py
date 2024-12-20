@@ -10,7 +10,7 @@ print(mat['imgs'].shape)
 #plt.imshow(mat['imgs'][:,90:180,0])
 #plt.show()
 from transformers import ViTImageProcessor, ViTModel
-model='google/vit-base-patch16-224-in21k'
+#model='google/vit-base-patch16-224-in21k'
 model='google/vit-base-patch16-224'
 processor = ViTImageProcessor.from_pretrained(model)
 model = ViTModel.from_pretrained(model)
