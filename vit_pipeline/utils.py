@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-import Path
+from pathlib import Path
 
 def make_container_dict(boc):
     '''
